@@ -21,7 +21,6 @@ Proof.
   intros.
   elim H.
   destruct H.
-  assumption.
 Qed.
 
 Lemma ex1_4 : B -> A \/ B.
@@ -38,4 +37,3 @@ Lemma ex1_6 : A -> bot -> !A.
 Proof.
 
 Qed.
-

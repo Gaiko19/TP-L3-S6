@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
   
   if (argc != 3) 
      {
-       printf("Usage: ImageIn.pgm\n"); 
+       printf("Usage: ImageIn.pgm ImageOut.dat\n"); 
        exit (1) ;
      }
    
