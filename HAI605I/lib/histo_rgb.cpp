@@ -48,13 +48,6 @@ int main(int argc, char* argv[])
 
     }
 
-    /*for (int i=0; i < nH*3; i++) {
-        for (int j=0; j < nW*3; j++)
-        {
-
-        }
-    }*/
-
     for (int i = 0; i < 256; i++) {
         fprintf(file_output, "%d\t%d\t%d\t%d\n", i, TxtOutR[i], TxtOutG[i], TxtOutB[i]);
     }
