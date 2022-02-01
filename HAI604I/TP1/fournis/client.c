@@ -45,45 +45,46 @@ int main(int argc, char *argv[]) {
   
   /* Etape 2 : Nommer la socket du client */
    struct sockaddr_in ad;
-   ad.sin_family = AF_INET;
+   socklen_t len = sizeof(ad);
+   ad.sin_family = AF_INET;            // IPv4
    ad.sin_addr.s_addr = INADDR_ANY;
-   ad.sin_port = htons((short)argv[2]); 
-   int res = bind(ds, (struct sockaddr*)&ad, sizeof(ad));
+   ad.sin_port = htons((short)argv[3]); 
+   int res = bind(ds, (struct sockaddr *)&ad, sizeof(ad));
    if (res == -1){
-      perror("Serveur : pb nommage socket :");
+      perror("Client : pb nommage socket :");
       exit(1);
   }
   /* Etape 3 : Désigner la socket du serveur */
    struct sockaddr_in srv;
    srv.sin_family = AF_INET;
    srv.sin_addr.s_addr = inet_addr(argv[1]); //91.174.102.81:32768
-   srv.sin_port = htons((short) atoi(argv[3]));
+   srv.sin_port = htons((short) atoi(argv[2]));
+
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-   char txt[100];
+   char* msgUser;
+   size_t inputSize;
    printf("Entrer un message : ");
-   fgets(txt, 100, stdin); 
-   ssize_t msg = sendto(ds, txt, strlen(txt)+1, 0, (struct sockaddr*)&srv,  sizeof(srv));
+   res = getline(&msgUser, &inputSize, stdin); 
+   ssize_t msg = sendto(ds, msgUser, strlen(msgUser)+1, 0, (struct sockaddr*)&srv,  sizeof(srv));
 
    if (msg == -1){
       perror("Serveur : pb envoi message :");
       exit(1);
   }
-  /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails)*/
-   int msg_retour =0;
-  ssize_t retour = recvfrom(ds, &msg_retour, sizeof(int), 0, (struct sockaddr*)&srv, sizeof(srv));
-   if (retour == -1){
-      perror("Serveur : pb réception message :");
-      exit(1);
-  }
-   printf(msg_retour);
-  /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/ 
-  int res_close = close(ds);
-  int res_shutdown = shutdown(ds, SHUT_RDWR);
-   if (res_close == -1 || res_shutdown == -1){
-      perror("Serveur : pb fermeture socket :");
-      exit(1);
-  }  
-  
-  printf("Client : je termine\n");
+   /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
+   socklen_t servAdr = sizeof(srv);
+   char bytesSent[100];
+   ssize_t servRes = recvfrom(ds, bytesSent, 100, 0, (struct sockaddr*)&srv, &servAdr);
+
+   if (servRes == -1) {
+      perror("[CLIENT] Erreur lors de la réception du message du serveur ");
+      exit(5);
+   }
+   printf("[CLIENT] %s", bytesSent);
+
+   /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
+   shutdown(ds, SHUT_RDWR); free(msgUser);
+
+   printf("[CLIENT] Sortie.\n");
   return 0;
 }
