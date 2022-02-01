@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
   
   if (argc != 3) 
      {
-       printf("Usage: ImageIn.pgm histo.dat\n"); 
+       printf("Usage: ImageIn.pgm histoRGB.dat\n"); 
        exit (1) ;
      }
    
@@ -20,17 +20,13 @@ int main(int argc, char* argv[])
 
 
    OCTET *ImgIn;
-
-   lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &nH, &nW);
+   
+   lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
    nTaille = nH * nW;
   
-   allocation_tableau(ImgIn, OCTET, nTaille);
-   lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
-	
-   //   for (int i=0; i < nTaille; i++)
-   // {
-   //  if ( ImgIn[i] < S) TxtOut[i]=0; else TxtOut[i]=255;
-   //  }
+   int nTaille3 = nTaille * 3;
+   allocation_tableau(ImgIn, OCTET, nTaille3);
+   lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
 
     int TxtOutR[256] = {0};
     int TxtOutG[256] = {0};
@@ -40,13 +36,16 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     };
 
-    for (int i=0; i < nH; i++) {
-        for (int j=0; j < nW; j++)
-        {
-        TxtOutR[ImgIn[(i*nW+j)*3]]++;
-        TxtOutG[ImgIn[(i*nW+j)*3+1]]++;
-        TxtOutB[ImgIn[(i*nW+j)*3+2]]++;
-        }
+    int nR, nG, nB =0;
+    for (int i=0; i < nTaille3; i+=3)
+    {
+      nR = ImgIn[i];
+      nG = ImgIn[i+1];
+      nB = ImgIn[i+2];
+      TxtOutR[nR]++;
+      TxtOutG[nG]++;
+      TxtOutB[nB]++;
+
     }
 
     for (int i = 0; i < 256; i++) {
