@@ -21,12 +21,12 @@
 #define NBETAT 15
 
 #define ID = 1
-#define IF
-#define LITENT
-#define LITFLOT
-#define EMPTY = -1
-#define COMCPP = -2
-#define COMC = -3
+#define IF = 2
+#define LITENT = 3
+#define LITFLOT = 4
+#define EMPTY = 5
+#define COMCPP = 5
+#define COMC = 6
 
 
 int TRANS[NBETAT][256];		/* table de transition : état suivant */
