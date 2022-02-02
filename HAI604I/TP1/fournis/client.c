@@ -30,14 +30,14 @@ int main(int argc, char *argv[]) {
      toutes les fonctions et agir en fonction des valeurs
      possibles. Voici un exemple */
   if (ds == -1){
-    perror("Client : pb creation socket :");
+    perror("[Client] : pb creation socket :");
     exit(1); // je choisis ici d'arrêter le programme car le reste
 	     // dépendent de la réussite de la création de la socket.
   }
   
   /* J'ajoute des traces pour comprendre l'exécution et savoir
      localiser des éventuelles erreurs */
-  printf("Client : creation de la socket réussie \n");
+  printf("[Client] : creation de la socket réussie \n");
   
   // Je peux tester l'exécution de cette étape avant de passer à la
   // suite. Faire de même pour la suite : n'attendez pas de tout faire
@@ -48,29 +48,35 @@ int main(int argc, char *argv[]) {
    socklen_t len = sizeof(ad);
    ad.sin_family = AF_INET;            // IPv4
    ad.sin_addr.s_addr = INADDR_ANY;
-   ad.sin_port = htons((short)argv[3]); 
-   int res = bind(ds, (struct sockaddr *)&ad, sizeof(ad));
+   ad.sin_port = htons(atoi(argv[3])); 
+   int res = bind(ds, (struct sockaddr *)&ad, len);
    if (res == -1){
-      perror("Client : pb nommage socket :");
+      perror("[Client] : pb nommage socket :");
       exit(1);
   }
   /* Etape 3 : Désigner la socket du serveur */
    struct sockaddr_in srv;
    srv.sin_family = AF_INET;
    srv.sin_addr.s_addr = inet_addr(argv[1]); //91.174.102.81:32768
-   srv.sin_port = htons((short) atoi(argv[2]));
+   srv.sin_port = htons(atoi(argv[2]));
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-   char* msgUser;
-   size_t inputSize;
+   char msgUser[100];
+
    printf("Entrer un message : ");
-   res = getline(&msgUser, &inputSize, stdin); 
+   scanf("%s",msgUser);
    ssize_t msg = sendto(ds, msgUser, strlen(msgUser)+1, 0, (struct sockaddr*)&srv,  sizeof(srv));
 
+
    if (msg == -1){
-      perror("Serveur : pb envoi message :");
+      perror("[Client] : pb envoi message :");
       exit(1);
   }
+  else
+  {
+     printf("Message bien envoyé...");
+  }
+  
    /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
    socklen_t servAdr = sizeof(srv);
    char bytesSent[100];
@@ -83,7 +89,7 @@ int main(int argc, char *argv[]) {
    printf("[CLIENT] %s", bytesSent);
 
    /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
-   shutdown(ds, SHUT_RDWR); free(msgUser);
+   shutdown(ds, SHUT_RDWR); //free(msgUser);
 
    printf("[CLIENT] Sortie.\n");
   return 0;

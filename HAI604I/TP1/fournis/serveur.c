@@ -8,7 +8,6 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-#define ERROR -1
 
 /* Fonction qui implémente le protocole réseau défini. Renvoie le message sous forme de chaine de caractères. */
 char *receiveMessage(int ds, struct sockaddr_in *sockClient, socklen_t *lgAdr) {
@@ -18,14 +17,14 @@ char *receiveMessage(int ds, struct sockaddr_in *sockClient, socklen_t *lgAdr) {
    // Jusqu'à un message de taille 10^100 octets.
    char bytes[100];
    ssize_t res = recvfrom(ds, bytes, sizeof(bytes), 0, (struct sockaddr*)sockClient, lgAdr);
-   if (res == ERROR)
+   if (res == -1)
       return NULL;
    int msgSize = atoi(bytes);
    char *message = malloc(msgSize);
    
    // 2 - Récupération du vrai message.
    res = recvfrom(ds, message, msgSize, 0, (struct sockaddr*)&sockClient, lgAdr);
-   if (res == ERROR) {
+   if (res == -1) {
       free(message);
       return NULL;
    }
@@ -42,7 +41,7 @@ int main(int argc, char *argv[]) {
       paramètres sont à adapter en fonction des besoins. Sans ces
       paramètres, l'exécution doit être arrétée, autrement, elle
       aboutira à des erreurs.*/
-   if (argc > 2){
+   if (argc != 2){
       printf("Utilisation : %s [port_serveur]\n", argv[0]);
       exit(1);
    }
@@ -53,7 +52,7 @@ int main(int argc, char *argv[]) {
    /* /!\ : Il est indispensable de tester les valeurs de retour de
       toutes les fonctions et agir en fonction des valeurs
       possibles. Voici un exemple */
-   if (ds == ERROR) {
+   if (ds == -1) {
       perror("[SERVEUR] Erreur lors de la création de la socket ");
       exit(1); // je choisis ici d'arrêter le programme car le reste
       // dépendent de la réussite de la création de la socket.
@@ -73,50 +72,50 @@ int main(int argc, char *argv[]) {
    ad.sin_family = AF_INET;            // IPv4
    ad.sin_addr.s_addr = INADDR_ANY;
 
-   // Nommage automatique
-   if (argc == 1) {
-      ad.sin_port = htons((short)0);
-   } 
    // Nommage manuel
-   else {
-      ad.sin_port = htons(atoi(argv[1]));
-   }
+   ad.sin_port = htons(atoi(argv[1]));
 
    int res = bind(ds, (struct sockaddr *)&ad, sizeof(ad));
-   if (res == ERROR) {
+   if (res == -1) {
       perror("[SERVEUR] Erreur lors du nommage de la socket ");
-      exit(2);
+      exit(1);
    }
 
    // Récupération de l'adresse et du numéro de port
-   if (getsockname(ds, (struct sockaddr *)&ad, &len) == ERROR) {
+   if (getsockname(ds, (struct sockaddr *)&ad, &len) == -1) {
       perror("[SERVEUR] Erreur lors du nommage automatique de la socket ");
-      exit(3);
+      exit(1);
    }
 
    printf("[SERVEUR] En cours d'exécution : %s:%d\n", inet_ntoa(ad.sin_addr), ntohs(ad.sin_port));
-
+   
    while (1) {
       struct sockaddr_in sockClient;
       socklen_t lgAdr = sizeof(sockClient);
       /* Etape 4 : recevoir un message du client (voir sujet pour plus de détails)*/
-      char *message = receiveMessage(ds, &sockClient, &lgAdr);
-      if (message == NULL) {
+      int msgSize = 100;
+      char msg[100];
+      ssize_t res = recvfrom(ds, msg, msgSize, 0, (struct sockaddr*)&sockClient, &lgAdr);
+      if (res == -1) {
+        perror("[SERVEUR] Erreur lors de la réception du message ");
+        exit(1);
+      }
+
+      if (msg == NULL) {
          perror("[SERVEUR] Erreur lors de la réception du message ");
-         free(message); exit(4);
+         exit(1);
       }
-      printf("[SERVEUR] Message reçu : %s\n", message);
+      printf("[SERVEUR] Message reçu : %s\n", msg);
       printf("[SERVEUR] Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
-   
-      /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails) */
-      char len[100];
-      sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(message));
-      if (sendto(ds, len, strlen(len) + 1, 0, (const struct sockaddr*)&sockClient, lgAdr) == ERROR) {
-         perror("[SERVEUR] Erreur lors du retour au client ");
-         free(message); exit(5);
-      }
-      free(message);
-   }
+    
+        /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails) */
+        char len[100];
+        sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
+        if (sendto(ds, len, strlen(len) + 1, 0, (const struct sockaddr*)&sockClient, lgAdr) == -1) {
+            perror("[SERVEUR] Erreur lors du retour au client ");
+            exit(5);
+        }
+    }
 
    /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
    
