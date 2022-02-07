@@ -73,25 +73,26 @@ int main(int argc, char *argv[]) {
     }
     printf("Mise en écoute réussie ! La socket est en attente de connexion...\n");
 
-    int newConnetion = accept(ds, (struct sockaddr *)&ad, &len);
+    struct sockaddr_in sockClient;
+    socklen_t lgAdr = sizeof(sockClient);
+    int newConnetion = accept(ds, (struct sockaddr *)&sockClient, &lgAdr);
     if(newConnetion == -1) {
         perror("[SERVEUR] Erreur lors d'une connexion entrante");
         exit(1);
     }
     printf("Nouvelle connexion établie !\n");
     while (1) {
-        struct sockaddr_in sockClient;
-        socklen_t lgAdr = sizeof(sockClient);
+
         /* Etape 5 : recevoir un message du client (voir sujet pour plus de détails)*/
-        int msgSize = 100;
-        char msg[100];
+        int msgSize = 4000;
+        char msg[4000];
         ssize_t res = recv(newConnetion,msg,msgSize,0);
         if (res == -1) {
             perror("[SERVEUR] Erreur lors de la réception du message ");
             exit(1);
         }
-
-        printf("[SERVEUR] Message reçu : %s\n", msg);
+        msg[res] = '\0';
+        printf("[SERVEUR] Message reçu : %s, nombre d'octets :%li\n", msg, res);
         printf("[SERVEUR] Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
         
         if (res == 0)

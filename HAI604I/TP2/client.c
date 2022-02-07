@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     printf("Connexion réussie...\n");
 
     /* Etape 5 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-    char msgUser[100];
+    char msgUser[1500];
 
     printf("Entrer un message : ");
     scanf("%s",msgUser);
@@ -85,10 +85,14 @@ int main(int argc, char *argv[]) {
         printf("Message bien envoyé...");
     }
 
+    if(send(ds, msgUser, strlen(msgUser)+1, 0)) {
+        perror("[Client] : problème envoi message");
+    }
+
     /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
     socklen_t servAdr = sizeof(srv);
     char bytesSent[100];
-    ssize_t servRes = recvfrom(ds, bytesSent, 100, 0, (struct sockaddr*)&srv, &servAdr);
+    ssize_t servRes = recv(ds, bytesSent, sizeof(int), 0);
 
     if (servRes == -1) {
         perror("[CLIENT] Erreur lors de la réception du message du serveur ");
