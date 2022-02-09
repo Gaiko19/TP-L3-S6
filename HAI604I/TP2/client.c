@@ -24,75 +24,65 @@ int main(int argc, char *argv[]) {
     }
 
     /* Etape 1 : créer une socket */   
-    int ds = socket(PF_INET, SOCK_STREAM, 0);
+  int ds = socket(PF_INET, SOCK_STREAM, 0);
+   if (ds == -1){
+    perror("[Client] : pb creation socket :\n");
+    exit(1);
+  }
+  printf("[Client] : creation de la socket réussie \n");
+  /* etape 1.2 : nommage de la socket client */
+  struct sockaddr_in sock_clt;
+  socklen_t size =sizeof(struct sockaddr_in);
+  sock_clt.sin_family = AF_INET;
+  sock_clt.sin_addr.s_addr = INADDR_ANY;
+  sock_clt.sin_port = htons((short)atoi(argv[3]));
+  getsockname(ds, (struct sockaddr *)&sock_clt, &size);
+  
+  int res = bind(ds, (struct sockaddr*) &sock_clt, sizeof(sock_clt));
+  if (res == -1){
+      perror("[Client] : pb nommage socket :\n");
+      exit(1);
+  }
+  /* etape 2 : designer la socket du serveur */
+  struct sockaddr_in sock_srv;
+  sock_srv.sin_family = AF_INET;
+  sock_srv.sin_addr.s_addr = inet_addr(argv[1]);
+  sock_srv.sin_port = htons(atoi(argv[2]));
 
-    /* /!\ : Il est indispensable de tester les valeurs de retour de
-        toutes les fonctions et agir en fonction des valeurs
-        possibles. Voici un exemple */
-    if (ds == -1){
-        perror("[Client] : problème creation socket :");
-        exit(1); // je choisis ici d'arrêter le programme car le reste
-            // dépendent de la réussite de la création de la socket.
-    }
-
-    /* J'ajoute des traces pour comprendre l'exécution et savoir
-        localiser des éventuelles erreurs */
-    printf("[Client] : creation de la socket réussie \n");
-
-    // Je peux tester l'exécution de cette étape avant de passer à la
-    // suite. Faire de même pour la suite : n'attendez pas de tout faire
-    // avant de tester.
-
-    /* Etape 2 : Nommer la socket du client */
-    struct sockaddr_in ad;
-    socklen_t len = sizeof(ad);
-    ad.sin_family = AF_INET;            // IPv4
-    ad.sin_addr.s_addr = INADDR_ANY;
-    ad.sin_port = htons(atoi(argv[3])); 
-    int res = bind(ds, (struct sockaddr *)&ad, len);
-    if (res == -1){
-        perror("[Client] : problème lors du nommage de la socket :");
-        exit(1);
-    }
-    /* Etape 3 : Désigner la socket du serveur */
-    struct sockaddr_in srv;
-    srv.sin_family = AF_INET;
-    srv.sin_addr.s_addr = inet_addr(argv[1]); //91.174.102.81:32768
-    srv.sin_port = htons(atoi(argv[2]));
-
-    /* Etape 4 : Connexion au serveur */
-    int dsConnect = connect(ds, (struct sockaddr *)&srv, sizeof(srv));
-    if (dsConnect == -1){
-        perror("[Client] : problème lors de la connexion à la socket :");
-        exit(1);
-    }
-    printf("Connexion réussie...\n");
-
+  /* etape 3 : demander une connexion */
+  int dsConnect = connect(ds, (struct sockaddr*)&sock_srv, sizeof(sock_srv));
+  if (dsConnect == -1){
+      perror("[Client] : pb connexion serveur :\n");
+      exit(1);
+  }
+  printf("[Client] : connexion réussie\n");
     /* Etape 5 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
     char msgUser[1500];
 
     printf("Entrer un message : ");
-    scanf("%s",msgUser);
-    ssize_t msg = sendto(ds, msgUser, strlen(msgUser)+1, 0, (struct sockaddr*)&srv,  sizeof(srv));
+    fgets(msgUser, 1500, stdin);
 
 
-    if (msg == -1){
+    if (send(ds, msgUser, strlen(msgUser)+1, 0) == -1){
         perror("[Client] : problème envoi message :");
-        exit(1);
     }
     else
     {
-        printf("Message bien envoyé...");
+        printf("Message bien envoyé...\n");
     }
 
-    if(send(ds, msgUser, strlen(msgUser)+1, 0)) {
-        perror("[Client] : problème envoi message");
+    if (send(ds, msgUser, strlen(msgUser)+1, 0) == -1){
+        perror("[Client] : problème envoi message2 :");
+    }
+    else
+    {
+        printf("Message2 bien envoyé...\n");
     }
 
     /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
-    socklen_t servAdr = sizeof(srv);
-    char bytesSent[100];
-    ssize_t servRes = recv(ds, bytesSent, sizeof(int), 0);
+    socklen_t servAdr = sizeof(sock_srv);
+    char bytesSent[1000];
+    int servRes = recv(ds, bytesSent, servAdr, 0);
 
     if (servRes == -1) {
         perror("[CLIENT] Erreur lors de la réception du message du serveur ");

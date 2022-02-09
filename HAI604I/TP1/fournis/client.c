@@ -72,10 +72,7 @@ int main(int argc, char *argv[]) {
       perror("[Client] : pb envoi message :");
       exit(1);
   }
-  else
-  {
      printf("Message bien envoyé...");
-  }
   
    /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
    socklen_t servAdr = sizeof(srv);

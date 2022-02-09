@@ -53,11 +53,11 @@ int main(int argc, char *argv[]) {
 
     // Exos
     //exo1(&ds_client);
-    //exo2_1_serveur(&ds_client);
+    exo2_1_serveur(&ds_client);
     //exo2_2_serveur(&ds_client);
     //exo2_3_serveur(&ds_client);
     //exo2_4_serveur(&ds_client);
-    exo3_serveur(&ds_client);
+    //exo3_serveur(&ds_client);
 
     // Etape 7 : fermeture de la socket cient
     success = close_socket(&ds_client);

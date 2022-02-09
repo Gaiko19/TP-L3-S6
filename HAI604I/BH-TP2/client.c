@@ -49,11 +49,11 @@ int main(int argc, char *argv[]) {
 
     // Exos
     //exo1(&ds)
-    //exo2_1_client(&ds);
+    exo2_1_client(&ds);
     //exo2_2_client(&ds);
     //exo2_3_client(&ds);
     //exo2_4_client(&ds);
-    exo3_client(&ds);
+    //exo3_client(&ds);
 
     // Etape 7 : fermeture de la socket
     success = close_socket(&ds);
