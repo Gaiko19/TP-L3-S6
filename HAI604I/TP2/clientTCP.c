@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include<arpa/inet.h>
 #include<string.h>
+#include "fonctionsTCP.c"
 
 /* Programme client TCP */
 
@@ -56,13 +57,14 @@ int main(int argc, char *argv[]) {
   }
   printf("[Client] : connexion réussie\n");
     /* Etape 5 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-    char msgUser[1500];
+    char msgUser[150000];
 
     printf("Entrer un message : ");
-    fgets(msgUser, 1500, stdin);
+    fgets(msgUser, 150000, stdin);
     int taille_msg = strlen(msgUser) +1;
-
-    if (send(ds, taille_msg, sizeof(int), 0) == -1){
+    for (int i = 0; i < 2; i++)
+    {    
+    if (sendTCP(ds, &taille_msg, sizeof(int)) == -1){
         perror("[Client] : problème envoi taille message :");
     }
     else
@@ -70,14 +72,14 @@ int main(int argc, char *argv[]) {
         printf("Taille bien envoyée...\n");
     }
 
-    if (send(ds, msgUser, strlen(msgUser)+1, 0) == -1){
+    if (sendTCP(ds, msgUser, strlen(msgUser)) == -1){
         perror("[Client] : problème envoi message :");
     }
     else
     {
         printf("Message bien envoyé...\n");
     }
-
+    }
     /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
     socklen_t servAdr = sizeof(sock_srv);
     char bytesSent[1000];

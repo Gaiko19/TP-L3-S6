@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
         paramètres sont à adapter en fonction des besoins. Sans ces
         paramètres, l'exécution doit être arrétée, autrement, elle
         aboutira à des erreurs.*/
-    if (argc != 4){
-        printf("utilisation : %s ip_serveur port_serveur port_client\n", argv[0]);
+    if (argc != 5){
+        printf("utilisation : %s ip_serveur port_serveur port_client nb_iteration\n", argv[0]);
         exit(1);
     }
 
@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
   printf("[Client] : creation de la socket réussie \n");
   /* etape 1.2 : nommage de la socket client */
   struct sockaddr_in sock_clt;
-  socklen_t size =sizeof(struct sockaddr_in);
   sock_clt.sin_family = AF_INET;
   sock_clt.sin_addr.s_addr = INADDR_ANY;
   sock_clt.sin_port = htons((short)atoi(argv[3]));
@@ -60,24 +59,26 @@ int main(int argc, char *argv[]) {
 
     printf("Entrer un message : ");
     fgets(msgUser, 1500, stdin);
-    int taille_msg = strlen(msgUser) +1;
-
-    if (send(ds, taille_msg, sizeof(int), 0) == -1){
+    int taille_msg = strlen(msgUser);
+    for (int i = 0; i < *argv[4]; i++)
+    {
+        if (send(ds, &taille_msg, sizeof(int), 0) == -1){
         perror("[Client] : problème envoi taille message :");
-    }
-    else
-    {
-        printf("Taille bien envoyée...\n");
-    }
+        }
+        else
+        {
+            printf("Taille bien envoyée...\n");
+        }
 
-    if (send(ds, msgUser, strlen(msgUser)+1, 0) == -1){
-        perror("[Client] : problème envoi message :");
+        if (send(ds, msgUser, strlen(msgUser), 0) == -1){
+            perror("[Client] : problème envoi message :");
+        }
+        else
+        {
+            printf("Message bien envoyé...\n");
+        }
     }
-    else
-    {
-        printf("Message bien envoyé...\n");
-    }
-
+    
     /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
     socklen_t servAdr = sizeof(sock_srv);
     char bytesSent[1000];

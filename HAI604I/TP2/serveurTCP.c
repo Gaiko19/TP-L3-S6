@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include "fonctionsTCP.c"
 
 /* Programme serveur TCP */
 
@@ -54,7 +55,9 @@ int main(int argc, char *argv[]) {
         /* Etape 5 : recevoir un message du client (voir sujet pour plus de détails)*/
         int msgSize;
         char* msg;
-        int resTaille = recv(newConnetion, &msgSize, sizeof(int),0);
+        for(int i =0; i < 2; i++)
+        {
+        int resTaille = recvTCP(newConnetion, &msgSize, sizeof(int));
         if (resTaille == -1) {
             perror("[SERVEUR] Erreur lors de la réception de la taille ");
             exit(1);
@@ -67,7 +70,7 @@ int main(int argc, char *argv[]) {
         else {
             printf("[Serveur] : taille du message %i octets\n", msgSize);
             msg = (char*) malloc(msgSize);
-            res = recv(newConnetion,msg,msgSize,0);
+            res = recvTCP(newConnetion,msg,msgSize);
             if (res == -1)
             {
                 perror("[SERVEUR] Erreur lors de la réception du message ");
@@ -80,7 +83,7 @@ int main(int argc, char *argv[]) {
             }
             printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", res, msg);
         }
-        
+        }
         /* Etape 6 : envoyer un message au client (voir sujet pour plus de détails) */
         char len[1000];
         sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));

@@ -54,32 +54,49 @@ int main(int argc, char *argv[]) {
         /* Etape 5 : recevoir un message du client (voir sujet pour plus de détails)*/
         int msgSize;
         char* msg;
-        int resTaille = recv(newConnetion, &msgSize, sizeof(int),0);
-        if (resTaille == -1) {
-            perror("[SERVEUR] Erreur lors de la réception de la taille ");
-            exit(1);
-        }
-        else if (resTaille == 0)
+        int j =0;
+        while (1)
         {
-            printf("[SERVEUR] Le client a fermé la connexion");
-            exit(1);
-        }
-        else {
-            printf("[Serveur] : taille du message %i octets\n", msgSize);
-            msg = (char*) malloc(msgSize);
-            res = recv(newConnetion,msg,msgSize,0);
-            if (res == -1)
-            {
-                perror("[SERVEUR] Erreur lors de la réception du message ");
+            int resTaille = recv(newConnetion, &msgSize, sizeof(int),0);
+            if (resTaille == -1) {
+                perror("[SERVEUR] Erreur lors de la réception de la taille ");
                 exit(1);
             }
-            else if (res == 0)
+            else if (resTaille == 0)
             {
                 printf("[SERVEUR] Le client a fermé la connexion");
                 exit(1);
             }
-            printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", res, msg);
+            else
+            {
+                printf("[Serveur] : taille du message %i octets\n", msgSize);
+                msg = (char*) malloc(msgSize);
+                int remaining_byte = msgSize;
+
+                while (remaining_byte > 0)
+                {
+                    res = recv(newConnetion,msg + (msgSize - remaining_byte),remaining_byte,0);
+                    if (res == -1)
+                    {
+                        perror("[SERVEUR] Erreur lors de la réception du message ");
+                        free(msg);
+                        exit(1);
+                    }
+                    else if (res == 0)
+                    {
+                        printf("[SERVEUR] Le client a fermé la connexion");
+                        exit(1);
+                    }
+
+                    remaining_byte -= res;
+                    j++;
+                }
+                printf("[Serveur] : nombre d'octet total : %i, message reçu après %i réceptions : %s\n", msgSize, j, msg);
+            }
+            
         }
+
+        
         
         /* Etape 6 : envoyer un message au client (voir sujet pour plus de détails) */
         char len[1000];
