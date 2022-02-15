@@ -1,21 +1,44 @@
-%{ /* analflex.l */
-/* ZONE DE DEFINITION (OPTIONNELLE) */
-/* ZONE DES REGLES apres le double pourcent (OBLIGATOIRE) */
+%{
+#define ONESPACE 300
+#define OK       301
 %}
-chiffre        ([0-9])
-lettre        ([a-zA-Z])
 %%
-^[\t ]*\n {/*ne rien faire, filtrer les blancs*/}
-^[\t ]+ {/*ne rien faire, filtrer les blancs/*/}
-[\t ]+$ {/*ne rien faire, filtrer les blancs*/}
-[\t ]+ {int c;
-    if ((c=input())!=EOF && c!=0){
-    //printf("<CHAR %c (%d)>", c,c); // débogage
-    unput(c); //rejet du char diff de EOF
-    putchar('_'); /* à changer en espace */
-    }
-}
+^[\t ]*\n           { /* filtrer, ligne vide */ }
+^[\t ]+             { /* filtrer, début de ligne */ }
+[\t ]+$             { /* filtrer, fin de ligne (le $ remplace le \n) */ }
+[\t ]+              { return ONESPACE; }  
+.|\n                { return OK; }
+%%
+#include <stdio.h>
 
-%%
-/* ZONE DES FONCTIONS C */
-int main() {int i; while((i=yylex()));}
+int main(int argc, char **argv) {
+    if (argc != 3) {
+        printf("Utilisation : %s file_in file_out", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    yyin = fopen(argv[1], "r");
+    yyout = fopen(argv[2], "w");
+    if (yyin == NULL || yyout == NULL) {
+        perror("Erreur lors de l'ouverture du fichier ");
+        exit(EXIT_FAILURE);
+    }                                           
+
+    int j;
+    while ((j = yylex()) != 0) {
+        switch(j) {
+        case ONESPACE :
+            fprintf(yyout, " ");
+            break;
+        case OK :
+            fprintf(yyout, "%s", yytext);
+            break;
+        default :
+            printf("Lexeme filtré : %s\n", yytext);
+            break;
+        }
+    }
+
+    fclose(yyin); fclose(yyout);
+    return 0;
+}

@@ -1,4 +1,4 @@
 all:
 	flex markdownHTML.l
-	gcc -o markdown lex.yy.c -lfl
+	gcc -o markdownHTML lex.yy.c -lfl
 	rm lex.yy.c
