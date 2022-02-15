@@ -31,9 +31,8 @@ int main(int argc, char *argv[]) {
   sock_clt.sin_family = AF_INET;
   sock_clt.sin_addr.s_addr = INADDR_ANY;
   sock_clt.sin_port = htons((short)atoi(argv[3]));
-  getsockname(ds, (struct sockaddr *)&sock_clt, &size);
   
-  int res = bind(ds, (struct sockaddr*) &sock_clt, sizeof(sock_clt));
+  int res = bind(ds, (struct sockaddr*) &sock_clt, size);
   if (res == -1){
       perror("[Client] : pb nommage socket :\n");
       exit(1);
@@ -51,24 +50,9 @@ int main(int argc, char *argv[]) {
       exit(1);
   }
   printf("[Client] : connexion réussie\n");
-  /* etape 4 : envoi de fichier : attention la question est générale. Il faut creuser pour définir un protocole d'échange entre le client et le serveur pour envoyer correctement un fichier */
-
-
-  int totalSent = 0; // variable pour compter le nombre total d'octet effectivement envoyés au serveur du début à la fin des échanges.
-
-
- 
-  /* le bout de code suivant est une lecture de contenu d'un fichier dont le nom est passé en paramètre.
-      - pour lire un fichier, il faut l'ouvrir en mode lecture
-      - la lecture se fait par blocs d'octets jusqu'à la fin du fichier.
-      - la taille d'un bloc est définie par la constante MAX_BUFFER_SIZE que vous pouvez modifier.
-
-      Le code est à compléter pour mettre en place l'envoi d'un fichier.
-  */
 
   // construction du nom du chemin vers le fichier
   int filename_size = strlen(argv[4]);
-  //char* file_name[filename_size] = argv[3];
 
   char* filepath = malloc(strlen(argv[4]) + 16); // ./emission/+nom fichier +\0
   filepath[0] = '\0';
@@ -85,9 +69,8 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  int file_size = attributes.st_size; // Retrieve file size
 
-  int file_size = attributes.st_size; // cette copie est uniquement informer d'où obtenir la taille du fichier.
-  
   printf("Client : taille du fichier : %d octets\n", file_size);
   
   // lecture du contenu d'un fichier
@@ -98,6 +81,22 @@ int main(int argc, char *argv[]) {
     exit(1);   
   }
   free(filepath);
+
+  if (send(ds,&filename_size,sizeof(int),0) == -1)
+  {
+    perror("[CLIENT] : Problème envoi taille nom du fichier");
+    exit(1);
+  }
+  if (send(ds,argv[4],strlen(argv[4]),0) == -1)
+  {
+    perror("[CLIENT] : Problème envoi nom du fichier");
+    exit(1);
+  }
+  if (send(ds,&file_size,sizeof(int),0) == -1)
+  {
+    perror("[CLIENT] : Problème envoi taille du fichier");
+    exit(1);
+  }
 
   int total_lu = 0;
   char buffer[MAX_BUFFER_SIZE];

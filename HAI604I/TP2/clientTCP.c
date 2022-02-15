@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     fgets(msgUser, 150000, stdin);
     int taille_msg = strlen(msgUser) +1;
     for (int i = 0; i < 2; i++)
-    {    
+    {   
     if (sendTCP(ds, &taille_msg, sizeof(int)) == -1){
         perror("[Client] : problème envoi taille message :");
     }

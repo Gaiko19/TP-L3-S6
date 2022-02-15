@@ -67,22 +67,21 @@ int main(int argc, char *argv[]) {
             printf("[SERVEUR] Le client a fermé la connexion");
             exit(1);
         }
-        else {
-            printf("[Serveur] : taille du message %i octets\n", msgSize);
-            msg = (char*) malloc(msgSize);
-            res = recvTCP(newConnetion,msg,msgSize);
-            if (res == -1)
-            {
-                perror("[SERVEUR] Erreur lors de la réception du message ");
-                exit(1);
-            }
-            else if (res == 0)
-            {
-                printf("[SERVEUR] Le client a fermé la connexion");
-                exit(1);
-            }
-            printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", res, msg);
+
+        printf("[Serveur] : taille du message %i octets\n", msgSize);
+        msg = (char*) malloc(msgSize);
+        res = recvTCP(newConnetion,msg,msgSize);
+        if (res == -1)
+        {
+            perror("[SERVEUR] Erreur lors de la réception du message ");
+            exit(1);
         }
+        else if (res == 0)
+        {
+            printf("[SERVEUR] Le client a fermé la connexion");
+            exit(1);
+        }
+        printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", res, msg);
         }
         /* Etape 6 : envoyer un message au client (voir sujet pour plus de détails) */
         char len[1000];
