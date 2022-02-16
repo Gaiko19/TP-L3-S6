@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     fgets(msgUser, 1500, stdin);
     int taille_msg = strlen(msgUser) +1;
 
-    if (send(ds, taille_msg, sizeof(int), 0) == -1){
+    if (send(ds, &taille_msg, sizeof(int), 0) == -1){
         perror("[Client] : problème envoi taille message :");
     }
     else

@@ -53,10 +53,9 @@ int main(int argc, char *argv[]) {
         }
         printf("Serveur : connexion du client (%s:%i)\n", inet_ntoa(socket_clt.sin_addr), ntohs((short) socket_clt.sin_port));
         /* Etape 5 : recevoir un message du client (voir sujet pour plus de détails)*/
-        int msgSize;
+        int msgSize = 0;
         char* msg;
-        for(int i =0; i < 2; i++)
-        {
+
         int resTaille = recvTCP(newConnetion, &msgSize, sizeof(int));
         if (resTaille == -1) {
             perror("[SERVEUR] Erreur lors de la réception de la taille ");
@@ -82,7 +81,7 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
         printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", res, msg);
-        }
+
         /* Etape 6 : envoyer un message au client (voir sujet pour plus de détails) */
         char len[1000];
         sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));

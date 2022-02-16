@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   sock_clt.sin_addr.s_addr = INADDR_ANY;
   sock_clt.sin_port = htons((short)atoi(argv[3]));
   
-  int res = bind(ds, (struct sockaddr*) &sock_clt, sizeof(sock_clt));
+  int res = bind(ds, (struct sockaddr*) &sock_clt, size);
   if (res == -1){
       perror("[Client] : pb nommage socket :\n");
       exit(1);
@@ -61,11 +61,11 @@ int main(int argc, char *argv[]) {
 
     printf("Entrer un message : ");
     fgets(msgUser, 150000, stdin);
-    int taille_msg = strlen(msgUser) +1;
-    for (int i = 0; i < 2; i++)
-    {   
+    int taille_msg = strlen(msgUser);
+
     if (sendTCP(ds, &taille_msg, sizeof(int)) == -1){
         perror("[Client] : problème envoi taille message :");
+        exit(1);
     }
     else
     {
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     {
         printf("Message bien envoyé...\n");
     }
-    }
+
     /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
     socklen_t servAdr = sizeof(sock_srv);
     char bytesSent[1000];

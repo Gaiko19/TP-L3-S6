@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "fonctionsTCP.c"
 
 #define MAX_BUFFER_SIZE 146980
 
@@ -71,42 +72,51 @@ int main(int argc, char *argv[])
             perror("[Serveur] : pb réception taille nom fichier :\n");
             exit(1);
         }
-        char filename[fileName_size];
-        printf("Taille fichier : %i",fileName_size);
-        int resName = recv(newConnection,filename,fileName_size,0);
+        char filename[MAX_BUFFER_SIZE];
+        printf("Taille nom fichier : %i\n",fileName_size);
+
+        int resName = recvTCP(newConnection,filename,fileName_size);
         if (resName == -1){
             perror("[Serveur] : pb réception nom fichier :\n");
             exit(1);
         }
-
+        
+        printf("Filename : %s\n",filename);
         char *filePath = malloc(strlen(filename) + 30);
-        filePath = "../reception/";
+        sprintf(filePath, "../reception/client-%i/", getpid());
 
-        // Création du dossier s'il n'existe pas encore (on ne peut pas stat dessus).
         struct stat attributes;
         if (stat(filePath, &attributes) == -1 && mkdir(filePath, 0700) == -1) {
             perror("[SERVEUR] Erreur lors de la création du dossier d'un client ");
             exit(1);
         }
 
-        strcat(filePath,filename);
-        FILE* file = fopen(filePath, "wb");
-
-        if(file == NULL){
-          perror("[Serveur] : erreur ouverture fichier: \n");
-          exit(1);  
+        strcat(filePath, filename);
+        if (filePath == NULL) {
+            printf("[SERVEUR] Erreur lors de la lecture du nom de fichier.\n");
+            exit(1);
         }
 
-        int resSize = recv(newConnection,&file_size,sizeof(int),0);
+        FILE* file = fopen(filePath, "wb");
+        printf("[SERVEUR] Écriture dans %s\n", filePath);
+        free(filePath);
+        if(file == NULL){
+            perror("[SERVEUR] Erreur lors de l'ouverture du fichier ");
+            exit(1);
+        }
+
+
+        int resSize = recvTCP(newConnection,&file_size,sizeof(int));
         if (resSize == -1){
             perror("[Serveur] : pb réception taille fichier :\n");
             exit(1);
         }
+        printf("Taille fichier : %i\n",file_size);
         
         int totalReceived = 0;
         while (totalReceived < file_size) {
-          char * buffer = (char*) malloc(file_size);
-          int reception = recv(newConnection,buffer,file_size,0);
+          char buffer[MAX_BUFFER_SIZE];
+          int reception = recv(newConnection,buffer,min(MAX_BUFFER_SIZE,file_size-totalReceived),0);
           if (reception== -1){
           perror("[Serveur] : pb réception fichier :\n");
           exit(1);
@@ -124,11 +134,9 @@ int main(int argc, char *argv[])
           totalReceived += reception;
         }
 
-
         printf("[SERVEUR] Fichier du client reçu. Fermeture de la connexion.\n");
         close(newConnection);
         fclose(file);
-        // Termine le fork quand le fichier est reçu.
         break;
     }
     close(newConnection);

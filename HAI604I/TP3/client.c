@@ -8,6 +8,7 @@
 #include<arpa/inet.h>
 #include<string.h>
 #include <sys/stat.h>
+#include "fonctionsTCP.c"
 
 #define MAX_BUFFER_SIZE 146980
 
@@ -82,28 +83,28 @@ int main(int argc, char *argv[]) {
   }
   free(filepath);
 
-  if (send(ds,&filename_size,sizeof(int),0) == -1)
+  if (sendTCP(ds,&filename_size,sizeof(int)) == -1)
   {
     perror("[CLIENT] : Problème envoi taille nom du fichier");
     exit(1);
   }
-  if (send(ds,argv[4],strlen(argv[4]),0) == -1)
+  if (sendTCP(ds,argv[4],strlen(argv[4])) == -1)
   {
     perror("[CLIENT] : Problème envoi nom du fichier");
     exit(1);
   }
-  if (send(ds,&file_size,sizeof(int),0) == -1)
+  if (sendTCP(ds,&file_size,sizeof(int)) == -1)
   {
     perror("[CLIENT] : Problème envoi taille du fichier");
     exit(1);
   }
 
   int total_lu = 0;
-  char buffer[MAX_BUFFER_SIZE];
+  char buffer[file_size];
   while(total_lu < file_size){
     
     size_t read = fread(buffer, sizeof(char), MAX_BUFFER_SIZE, file);
-    ssize_t envoi = send(ds, file, file_size, 0);
+    ssize_t envoi = sendTCP(ds, buffer, read);
 
     if (envoi == -1) {
       perror("[CLIENT] : Problème lors de l'envoi \n");
@@ -116,15 +117,14 @@ int main(int argc, char *argv[]) {
         exit(1);
       }
       else{
-        printf("Client : arrivé a la fin du la lecture du fichier\n");// fin du fichier
+        printf("Client : arrivé a la fin du la lecture du fichier\n");
 	      break;
       }
     }
     printf("Client : j'ai lu un bloc du fichier \n");  
-    total_lu += envoi;
+    total_lu += read;
   }
 
-  // fermeture du fichier
   fclose(file); 
    
   printf("Client : j'ai lu au total : %d octets \n", total_lu);  
