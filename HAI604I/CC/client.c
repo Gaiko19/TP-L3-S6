@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include<arpa/inet.h>
 #include<string.h>
+#include "fonctionsTCP.c"
 
 /* Programme client TCP */
 
@@ -229,7 +230,7 @@ while (1) {
         printf("[SERVEUR] Le client connecté est %s:%i.\n", inet_ntoa(sock_cltTCP.sin_addr), ntohs(sock_cltTCP.sin_port));
         
         int tailleTCP =0;
-        int resTailleTCP = recv(newConnectionTCP,&tailleTCP,sizeof(int),0);
+        int resTailleTCP = recvTCP(newConnectionTCP,&tailleTCP,sizeof(int));
         if (resTailleTCP == -1 || resTailleTCP == 0){
             perror("[Serveur] : pb réception taille msg ou client fermé:\n");
             
@@ -237,7 +238,7 @@ while (1) {
         else
         {
             char msgTCP[tailleTCP];
-            int resMsgTCP = recv(newConnectionTCP,msgTCP,tailleTCP,0);
+            int resMsgTCP = recvTCP(newConnectionTCP,msgTCP,tailleTCP);
             if (resMsgTCP == -1 || resMsgTCP == 0){
                 perror("[Serveur] : pb réception msg ou client fermé :\n");
                 
@@ -245,6 +246,26 @@ while (1) {
             else
             {
                 printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", resTailleTCP, msgTCP);
+            }
+        }
+
+        int tailleTCP2 =0;
+        int resTailleTCP2 = recvTCP(newConnectionTCP,&tailleTCP2,sizeof(int));
+        if (resTailleTCP2 == -1 || resTailleTCP2 == 0){
+            perror("[Serveur] : pb réception taille msg ou client fermé:\n");
+            
+        }
+        else
+        {
+            char msgTCP2[tailleTCP2];
+            int resMsgTCP2 = recvTCP(newConnectionTCP,msgTCP2,tailleTCP2);
+            if (resMsgTCP2 == -1 || resMsgTCP2 == 0){
+                perror("[Serveur] : pb réception msg ou client fermé :\n");
+                
+            }
+            else
+            {
+                printf("[Serveur] : nombre d'octet : %i, message reçu : %s\n", resTailleTCP2, msgTCP2);
             }
         }
         
