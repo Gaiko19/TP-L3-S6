@@ -1,6 +1,7 @@
-/** @file analdesc.c        
- *@author Michel Meynard
- *@brief Analyse descendante récursive d'expression arithmétique
+/** 
+ * @file analdesc.c        
+ * @author Michel Meynard
+ * @brief Analyse descendante récursive d'expression arithmétique
  *
  * Ce fichier contient un reconnaisseur d'expressions arithmétiques composée de 
  * littéraux entiers sur un car, des opérateurs +, * et du parenthésage ().
@@ -11,58 +12,67 @@
 #include <stdlib.h>
 #include <ctype.h>
                              /* les macros sont des blocs : pas de ';' apres */
-#define AVANCER {jeton=getchar();numcar++;}
-#define TEST_AVANCE(prevu) {if (jeton==(prevu)) AVANCER else ERREUR_SYNTAXE}
-#define ERREUR_SYNTAXE {printf("\nMot non reconnu : erreur de syntaxe \
-au caractère numéro %d \n",numcar); exit(1);} 
+#define AVANCER { jeton = getchar(); numcar++; }
+#define TEST_AVANCE(prevu) { if (jeton == (prevu)) AVANCER else ERREUR_SYNTAXE }
+#define ERREUR_SYNTAXE { printf("\nMot non reconnu : erreur de syntaxe \
+au caractère numéro %d \n",numcar); exit(1); } 
 
+int E(); int R(int gauche); int T(); int S(int left); int F(); 
 
-int E();int R(int x);int T();int S(int x);int F(); /* déclars */
+int jeton;                                  /* caractère courant du flot d'entrée */
+int numcar = 0;                             /* numero du caractère courant (jeton) */
 
-int jeton;                       /* caractère courant du flot d'entrée */
-int numcar=0;                    /* numero du caractère courant (jeton) */
-int somme=0;
+int E() {                                   /* regle : E->TR */    
+    return R(T());
+}
 
-int E(){
-  return (R(T()));                          /* regle : E->TR */
-}
-int R(int x){
-  if (jeton=='+') {             /* regle : R->+TR */
-    AVANCER
-    return R(x + T());
-  }
-    return x;                       /* regle : R->epsilon */
-}
-int T(){
-  return S(F());                 /* regle : T->FS */
-}
-int S(int x){
-  if (jeton=='*') {             /* regle : S->*FS */
-    AVANCER
-    return S(F() * x);
-  }
-    return x;                    /* regle : S->epsilon */
-}
-int F(int x){
-  if (jeton=='(') {             /* regle : F->(E) */
-    AVANCER
-    TEST_AVANCE(')')
-    return E();
-  }
-  else 
-    if (isdigit(jeton)) {         /* regle : F->0|1|...|9 */
-        char str[] = {jeton, '\0'};
-        int jetonChar = atoi(str);
-      AVANCER
-        return jetonChar;
+int R(int left) {                           /* regle : R->+TR|epsilon */
+    if (jeton == '+') {                     
+        AVANCER
+        return R(left + T());
     }
-    else ERREUR_SYNTAXE
+    return left;
 }
-int main(void){                 /* Fonction principale */
-  AVANCER			/* initialiser jeton sur le premier car */
-  int res = E();                          /* axiome */
-  if (jeton==EOF)               /* expression reconnue et rien après */
-    printf("\nMot reconnu : %i\n", res); 
-  else ERREUR_SYNTAXE           /* expression reconnue mais il reste des car */
-  return 0;
+
+int T() {                                   /* regle : T->FS */
+    return S(F());
+}
+
+int S(int left) {                           /* regle : S->*FS|epsilon */
+    if (jeton == '*') {                     
+        AVANCER
+        return S(left * F());
+    }
+    return left;
+}
+
+int F() {                                   /* regle : F->(E)|0|1|...|9 */
+    if (jeton == '(') {                     
+        AVANCER
+        int res = E();
+        TEST_AVANCE(')')
+        return res;
+    }
+    else {
+        if (isdigit(jeton)) {
+            int val = jeton - '0';
+            AVANCER
+            return val;
+        }
+        else {
+            ERREUR_SYNTAXE
+        }
+    }
+}
+
+int main() {                             
+    AVANCER			                        /* initialiser jeton sur le premier car */
+    int result = E();                       /* axiome */
+    if (jeton == '\n') {                    /* expression reconnue et rien après */
+        printf("Mot reconnu. Résultat: %i\n", result); 
+    }
+    else {
+        ERREUR_SYNTAXE                      /* expression reconnue mais il reste des car */
+    }
+    return 0;
 }
