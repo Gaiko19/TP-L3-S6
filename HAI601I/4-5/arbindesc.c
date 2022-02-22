@@ -11,53 +11,79 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "arbin.h"
+
                              /* les macros sont des blocs : pas de ';' apres */
 #define AVANCER { jeton = getchar(); numcar++; }
 #define TEST_AVANCE(prevu) { if (jeton == (prevu)) AVANCER else ERREUR_SYNTAXE }
 #define ERREUR_SYNTAXE { printf("\nMot non reconnu : erreur de syntaxe \
 au caractère numéro %d \n",numcar); exit(1); } 
 
-int E(); int R(int gauche); int T(); int S(int left); int F(); 
+Arbin E(); Arbin R(); Arbin T(); Arbin S(); Arbin F(); 
 
 int jeton;                                  /* caractère courant du flot d'entrée */
 int numcar = 0;                             /* numero du caractère courant (jeton) */
 
-int E() {                                   /* regle : E->TR */    
-    return R(T());
+Arbin E() {                                   /* regle : E->TR */    
+    Arbin t = T();
+    Arbin r = R();
+    if (ab_vide(r)) {
+        return t;
+    }
+    Arbin op = ab_construire(ab_racine(r), t, ab_sag(r));
+    if (ab_vide(ab_sad(r))) {
+        return op;
+    }
+    return ab_construire(ab_racine(ab_sad(r)), op, ab_sag(ab_sad(r))); 
 }
 
-int R(int left) {                           /* regle : R->+TR|epsilon */
+Arbin R() {                           /* regle : R->+TR|epsilon */
+    Arbin res = ab_creer();
     if (jeton == '+') {                     
         AVANCER
-        return R(left + T());
+        Arbin t = T();
+        Arbin r = R();
+        res = ab_construire('+', t, r);
     }
-    return left;
+    return res;
 }
 
-int T() {                                   /* regle : T->FS */
-    return S(F());
+Arbin T() {                                  /* regle : T->FS */
+    Arbin f = F();
+    Arbin s = S();
+    if (ab_vide(s)) {
+        return f;
+    }
+    Arbin op = ab_construire(ab_racine(s), f, ab_sag(s));
+    if (ab_vide(ab_sad(s))) {
+        return op;
+    }
+    return ab_construire(ab_racine(ab_sad(s)), op, ab_sag(ab_sad(s))); 
 }
 
-int S(int left) {                           /* regle : S->*FS|epsilon */
+Arbin S() {                           /* regle : S->*FS|epsilon */
+    Arbin res = ab_creer();
     if (jeton == '*') {                     
         AVANCER
-        return S(left * F());
+        Arbin s = S();
+        Arbin f = F();
+        res = ab_construire('*', s, f);
     }
-    return left;
+    return res;
 }
 
-int F() {                                   /* regle : F->(E)|0|1|...|9 */
+Arbin F() {                                   /* regle : F->(E)|0|1|...|9 */
     if (jeton == '(') {                     
         AVANCER
-        int res = E();
+        Arbin e = E();
         TEST_AVANCE(')')
-        return res;
+        return e;
     }
     else {
         if (isdigit(jeton)) {
-            int val = jeton - '0';
+            int value = jeton;
             AVANCER
-            return val;
+            return ab_construire(value, ab_creer(), ab_creer());
         }
         else {
             ERREUR_SYNTAXE
@@ -65,14 +91,16 @@ int F() {                                   /* regle : F->(E)|0|1|...|9 */
     }
 }
 
-int main() {                             
+int main() {                           
     AVANCER			                        /* initialiser jeton sur le premier car */
-    int result = E();                       /* axiome */
+    Arbin e = E();                                    /* axiome */
     if (jeton == '\n') {                    /* expression reconnue et rien après */
-        printf("Mot reconnu. Résultat: %i\n", result); 
+        printf("Mot reconnu.\n"); 
+        ab_afficher(e);
     }
     else {
         ERREUR_SYNTAXE                      /* expression reconnue mais il reste des car */
     }
+    ab_vide(&e);
     return 0;
 }
