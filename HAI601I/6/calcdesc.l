@@ -94,6 +94,7 @@ double G() {                                   /* regle : G->(E)|0|1|...|9 */
 }
 
 int main(int argc, char **argv) {
+    printf("Entrer un calcul à effectuer : ");  
     AVANCER
     double result = E();                    /* axiome */
     if (jeton == '\n') {                    /* expression reconnue et rien après */
