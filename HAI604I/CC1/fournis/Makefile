@@ -2,12 +2,11 @@
 #~ définitions
 ########################################
 
-BIN=bin/client  bin/serveur
 
+BIN=bin/acompleter
 
 # liste des fichiers sources 
-SRCS0=client.c
-SRCS1=serveur.c
+SRCS1=acompleter.c
 
 default: $(BIN)
 
@@ -18,13 +17,8 @@ default: $(BIN)
 obj/%.o: %.c
 	gcc -Wall -Iinclude -c $< -o $@
 
-bin/client: $(SRCS0:%.c=obj/%.o)
+bin/acompleter: $(SRCS1:%.c=obj/%.o)
 	gcc -o $@ $+
-
-bin/serveur: $(SRCS1:%.c=obj/%.o)
-	gcc -o $@ $+
-
-
 
 clean:
-	rm -f $(BIN) obj/*.o *~
+	rm -f bin/acompleter obj/acompleter.o *~
