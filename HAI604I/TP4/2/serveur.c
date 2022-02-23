@@ -35,7 +35,7 @@ void * routine (void * params) {
         int resMsgTCP = recvTCP(arg->idConnexion,msgTCP,tailleTCP);
         if (resMsgTCP == -1 || resMsgTCP == 0){
             perror("[Serveur] : pb réception msg ou client fermé :\n");
-            
+            pthread_exit(NULL);
         }
         else
         {
@@ -87,7 +87,7 @@ while (1) {
     struct sockaddr_in sock_cltTCP;
     int newConnectionTCP = accept(srv, (struct sockaddr*)&sock_cltTCP, &size);
     
-    if (newConnectionTCP == -1 || newConnectionTCP == 0) {
+    if (newConnectionTCP == -1) {
         perror("[Serveur] : problème lors de la connection d'un client");
     }
     i++;
