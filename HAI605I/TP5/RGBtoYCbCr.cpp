@@ -11,16 +11,16 @@ int main(int argc, char* argv[])
   char cNomImgLue[250], cNomImgRed[250], cNomImgGreen[250], cNomImgBlue[250];
   int nH, nW, nTaille, nTailleY;
 
-  if (argc != 5) 
+  if (argc != 2) 
     {
-      printf("Usage: ImageIn.ppm ImageOutRed.pgm ImageOutGreen.pgm ImageOutBlue.pgm\n"); 
+      printf("Usage: ImageIn.ppm \n"); 
       exit (1) ;
     }
   
   sscanf (argv[1],"%s",cNomImgLue) ;
-  sscanf (argv[2],"%s",cNomImgRed) ;
-  sscanf (argv[3],"%s",cNomImgGreen) ;
-  sscanf (argv[4],"%s",cNomImgBlue) ;
+  sscanf ("Cr.pgm","%s",cNomImgRed) ;
+  sscanf ("Y.pgm","%s",cNomImgGreen) ;
+  sscanf ("Cb.pgm","%s",cNomImgBlue) ;
 
   OCTET *ImgIn;
   OCTET *ImgOutY;
@@ -47,9 +47,9 @@ int main(int argc, char* argv[])
 
       }
     }
-    ecrire_image_ppm(cNomImgRed, ImgOutCr,  nH, nW);
-    ecrire_image_ppm(cNomImgBlue, ImgOutCb,  nH, nW);
-    ecrire_image_ppm(cNomImgGreen, ImgOutY,  nH, nW);
+    ecrire_image_pgm(cNomImgRed, ImgOutCr,  nH, nW);
+    ecrire_image_pgm(cNomImgBlue, ImgOutCb,  nH, nW);
+    ecrire_image_pgm(cNomImgGreen, ImgOutY,  nH, nW);
     free(ImgIn);
     free(ImgOutY);
     free(ImgOutCb);
