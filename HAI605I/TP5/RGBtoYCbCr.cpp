@@ -42,8 +42,8 @@ int main(int argc, char* argv[])
     for (int i=0; i < nH; i++) {
       for (int j=0; j < nW; j++) {
           ImgOutY[(i*nW+j)] = (0.299 * ImgIn[(i*nW+j)*3] + 0.587 * ImgIn[(i*nW+j)*3+1] + 0.114 * ImgIn[(i*nW+j)*3+2]);
-          ImgOutCb[(i*nW+j)] = ((ImgIn[(i*nW+j)*3+2] - ImgOutY[(i*nW+j)]) * 0.564 + 128);
-          ImgOutCr[(i*nW+j)] = ((ImgIn[(i*nW+j)*3] - ImgOutY[(i*nW+j)]) * 0.713 + 128);
+          ImgOutCb[(i*nW+j)] = -0.1687*ImgIn[(i*nW+j)*3] - 0.3313*ImgIn[(i*nW+j)*3+1] + 0.5*ImgIn[(i*nW+j)*3+2] + 128;
+          ImgOutCr[(i*nW+j)] = 0.5*ImgIn[(i*nW+j)*3] - 0.4187*ImgIn[(i*nW+j)*3+1] - 0.0813*ImgIn[(i*nW+j)*3+2] + 128;
 
       }
     }

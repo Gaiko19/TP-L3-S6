@@ -41,9 +41,14 @@ int main(int argc, char* argv[]) {
 
         for (int i=0; i < nH; i++) {
             for (int j=0; j < nW; j++) {
-                ImgOut[(i*nW+j)*3] =  ImgInY[(i*nW+j)] + 1.402 * (ImgInCr[(i*nW+j)] - 128);
-                ImgOut[(i*nW+j)*3+1] = ImgInY[(i*nW+j)] - 0.34414 * (ImgInCb[(i*nW+j)] - 128) - 0.714414 * (ImgInCr[(i*nW+j)] -128);
-                ImgOut[(i*nW+j)*3+2] = ImgInY[(i*nW+j)] + 1.402 * (ImgInCb[(i*nW+j)] - 128);
+                int r,g,b;
+                r =  ImgInY[(i*nW+j)] + 1.402 * (ImgInCr[(i*nW+j)] - 128);
+                g = ImgInY[(i*nW+j)] - 0.34414 * (ImgInCb[(i*nW+j)] - 128) - 0.714414 * (ImgInCr[(i*nW+j)] -128);
+                b = ImgInY[(i*nW+j)] + 1.772 * (ImgInCb[(i*nW+j)] - 128);
+
+                ImgOut[(i*nW+j)*3] =  max(0, min(255, r));
+                ImgOut[(i*nW+j)*3+1] = max(0, min(255, g));
+                ImgOut[(i*nW+j)*3+2] = max(0, min(255, b));
             }
         }
         ecrire_image_ppm(cNomImgOut, ImgOut,  nH, nW);

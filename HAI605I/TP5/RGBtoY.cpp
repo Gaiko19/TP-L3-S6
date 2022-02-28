@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
     for (int i=0; i < nH; i++) {
       for (int j=0; j < nW; j++) {
-          ImgOut[(i*nW+j)] = (ImgIn[(i*nW+j)*3] + ImgIn[(i*nW+j)*3+1] + ImgIn[(i*nW+j)*3+2])/3;
+          ImgOut[(i*nW+j)] = round(0.299 * ImgIn[(i*nW+j)*3] + 0.587 * ImgIn[(i*nW+j)*3+1] + 0.114 * ImgIn[(i*nW+j)*3+2]);
       }
     }
     ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
