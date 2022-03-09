@@ -3,26 +3,27 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "calcul.h"
+#include <pthread.h>
 
 struct predicatRdv {
 
-// regrouoes les donnée partagées entres les threads participants aux RdV :
+// regrouoes les donnï¿½e partagï¿½es entres les threads participants aux RdV :
 
   ...
 };
 
 struct params {
 
-  // structure pour regrouper les paramètres d'un thread. 
+  // structure pour regrouper les paramï¿½tres d'un thread. 
 
-  int idThread; // un identifiant de thread, de 1 à N (N le nombre
+  int idThread; // un identifiant de thread, de 1 ï¿½ N (N le nombre
 		// total de theads secondaires
   struct predicatRdv * varPartagee;
 
 
 };
 
-// fonction associée a chaque thread participant au RdV.
+// fonction associï¿½e a chaque thread participant au RdV.
 
 void * participant (void * p){ 
 
@@ -35,7 +36,7 @@ void * participant (void * p){
 
   // RdV 
   ...
-  while (...) {  // attention : le dernier arrivé ne doit pas attendre. Il doit réveiller tous les autres.
+  while (...) {  // attention : le dernier arrivï¿½ ne doit pas attendre. Il doit rï¿½veiller tous les autres.
    attente
   }
 
@@ -45,7 +46,7 @@ void * participant (void * p){
 
 
   ...
-  pthread_exit(NULL); // fortement recommandé.
+  pthread_exit(NULL); // fortement recommandï¿½.
 }
 
 
@@ -68,7 +69,7 @@ int main(int argc, char * argv[]){
 
   srand(atoi(argv[1]));  // initialisation de rand pour la simulation de longs calculs
  
-  // création des threards 
+  // crï¿½ation des threards 
   for (int i = 0; i < atoi(argv[1]); i++){
     tabParams[i].idThread = ...;
     tabParams[i].varPartagee = ...; 

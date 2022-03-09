@@ -48,7 +48,7 @@ void * routine (void * params) {
 
 int main(int argc, char *argv[]) {
     /* etape 0 : gestion des paramètres si vous souhaitez en passer */
-    if (argc > 2) {
+    if (argc != 2) {
         printf("Utilisation : [port_serveur]\n");
         exit(1);
     }
@@ -91,12 +91,12 @@ while (1) {
         perror("[Serveur] : problème lors de la connection d'un client");
     }
     i++;
-    struct paramsFonctionThread args;
-    args.idConnexion = newConnectionTCP;
-    args.sockCltAdr = sock_cltTCP.sin_addr;
-    args.sockCltPort = sock_cltTCP.sin_port;
+    struct paramsFonctionThread *args = malloc(sizeof(struct paramsFonctionThread));
+    args->idConnexion = newConnectionTCP;
+    args->sockCltAdr = sock_cltTCP.sin_addr;
+    args->sockCltPort = sock_cltTCP.sin_port;
 
-    if (pthread_create(&threads[i], NULL, routine, &args) != 0){
+    if (pthread_create(&threads[i], NULL, routine, args) != 0){
       perror("erreur creation thread");
       exit(1);
     }
