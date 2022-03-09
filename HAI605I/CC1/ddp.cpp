@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
   allocation_tableau(ImgIn, OCTET, nTaille);
   lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
   
-  int TxtOut[256] = {0};
+  float TxtOut[256] = {0};
   FILE* file_output;
   if((file_output = fopen(cNomTxtEcrite,"w")) == NULL) {
       exit(EXIT_FAILURE);
@@ -37,9 +37,10 @@ int main(int argc, char* argv[])
           TxtOut[ImgIn[i*nW+j]]++;
       }
       for (int i = 0; i < 256; i++) {
-          fprintf(file_output, "%d\t%d\n", i, TxtOut[i]);
+          TxtOut[i] = float(TxtOut[i])/float(nTaille);
+          fprintf(file_output, "%d\t%f\n", i, TxtOut[i]);
       }
-      fclose(file_output);
+    fclose(file_output);
   free(ImgIn);
 
   return 1;
