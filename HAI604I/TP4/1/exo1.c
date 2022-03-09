@@ -53,17 +53,6 @@ int main(int argc, char * argv[]){
     pthread_join(threads[i], NULL);
   }
 
-
-
-  char c; 
-  printf("saisir un caractère \n");
-  c = fgetc(stdin);
-
-  printf("Chaine finale : \n");
-  for (int i =0; i<atoi(argv[1])+1; i++) {
-    printf(" %lu ",chaine[i]);
-  }
-
   return 0;
  
 }
