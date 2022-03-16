@@ -36,7 +36,7 @@ void * traitement (void * p) {
   struct params * args = (struct params *) p;
   struct  varPartagees *  vPartage = args -> vPartage;
 
-  printf("Traitement n°%i de %i zones \n",args->idThread, vPartage->nbZones);
+  printf("Début traitement n°%i\n",args->idThread);
 
   for(int i = 0; i < vPartage->nbZones; i++){
    pthread_mutex_lock(&vPartage->lock);
@@ -44,9 +44,9 @@ void * traitement (void * p) {
     
     if(args->idThread != 0){ // le premier traitement n'attent personne
       while(vPartage->di[i] != args->idThread){
-        printf("Traitement %i attends et libère le verrou\n", args->idThread);
+        printf("Traitement %i attends la zone %i\n", args->idThread,i);
         pthread_cond_wait(&vPartage->cond, &vPartage->lock);
-        printf("Traitement %i se réveille et vérouille le verrou\n", args->idThread);
+        //printf("Traitement %i se réveille et vérouille le verrou\n", args->idThread);
       }
     }
     pthread_mutex_unlock(&vPartage->lock);
@@ -54,12 +54,13 @@ void * traitement (void * p) {
 
     // dans cette partie, le traitement de la zone i est à faire en faisant une simulation d'un long calcul (appel a calcul(...)
     printf("Traitement n°%i de la zone %i \n",args->idThread, i);
-    calcul( args->idThread *3);
+    calcul( 2+ args->idThread *3);
     printf("Fin du traitement n°%i de la zone %i \n",args->idThread, i);
+    pthread_mutex_lock(&vPartage->lock);
     vPartage->di[i] = args->idThread;
 
     // a la fin du traitement d'une zone, le signaler pour qu'un thread en attente se réveille. 
-    pthread_cond_signal(&vPartage->cond);
+    pthread_cond_broadcast(&vPartage->cond);
     pthread_mutex_unlock(&vPartage->lock);
       
   }
