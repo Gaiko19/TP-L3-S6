@@ -1,3 +1,3 @@
 all:
-	cpp -Wall rdv.cpp -o rdv -lpthread
+	gcc -Wall rdv.c -o rdv calculC.o -lpthread
 	
