@@ -1,0 +1,220 @@
+Grammaire
+
+    0 $accept: ligne $end
+
+    1 ligne: error '\n'
+    2      | S '\n'
+
+    3 S: S '|' E
+    4  | E
+
+    5 E: E T
+    6  | T
+
+    7 T: T '*'
+    8  | F
+
+    9 F: '(' S ')'
+   10  | SYMBOLE
+
+
+Terminaux, suivis des règles où ils apparaissent
+
+    $end (0) 0
+    '\n' (10) 1 2
+    '(' (40) 9
+    ')' (41) 9
+    '*' (42) 7
+    '|' (124) 3
+    error (256) 1
+    SYMBOLE <c> (258) 10
+
+
+Non-terminaux, suivis des règles où ils apparaissent
+
+    $accept (9)
+        à gauche: 0
+    ligne (10)
+        à gauche: 1 2
+        à droite: 0
+    S <a> (11)
+        à gauche: 3 4
+        à droite: 2 3 9
+    E <a> (12)
+        à gauche: 5 6
+        à droite: 3 4 5
+    T <a> (13)
+        à gauche: 7 8
+        à droite: 5 6 7
+    F <a> (14)
+        à gauche: 9 10
+        à droite: 8
+
+
+État 0
+
+    0 $accept: . ligne $end
+
+    error    décalage et aller à l'état 1
+    SYMBOLE  décalage et aller à l'état 2
+    '('      décalage et aller à l'état 3
+
+    ligne  aller à l'état 4
+    S      aller à l'état 5
+    E      aller à l'état 6
+    T      aller à l'état 7
+    F      aller à l'état 8
+
+
+État 1
+
+    1 ligne: error . '\n'
+
+    '\n'  décalage et aller à l'état 9
+
+
+État 2
+
+   10 F: SYMBOLE .
+
+    $défaut  réduction par utilisation de la règle 10 (F)
+
+
+État 3
+
+    9 F: '(' . S ')'
+
+    SYMBOLE  décalage et aller à l'état 2
+    '('      décalage et aller à l'état 3
+
+    S  aller à l'état 10
+    E  aller à l'état 6
+    T  aller à l'état 7
+    F  aller à l'état 8
+
+
+État 4
+
+    0 $accept: ligne . $end
+
+    $end  décalage et aller à l'état 11
+
+
+État 5
+
+    2 ligne: S . '\n'
+    3 S: S . '|' E
+
+    '|'   décalage et aller à l'état 12
+    '\n'  décalage et aller à l'état 13
+
+
+État 6
+
+    4 S: E .
+    5 E: E . T
+
+    SYMBOLE  décalage et aller à l'état 2
+    '('      décalage et aller à l'état 3
+
+    $défaut  réduction par utilisation de la règle 4 (S)
+
+    T  aller à l'état 14
+    F  aller à l'état 8
+
+
+État 7
+
+    6 E: T .
+    7 T: T . '*'
+
+    '*'  décalage et aller à l'état 15
+
+    $défaut  réduction par utilisation de la règle 6 (E)
+
+
+État 8
+
+    8 T: F .
+
+    $défaut  réduction par utilisation de la règle 8 (T)
+
+
+État 9
+
+    1 ligne: error '\n' .
+
+    $défaut  réduction par utilisation de la règle 1 (ligne)
+
+
+État 10
+
+    3 S: S . '|' E
+    9 F: '(' S . ')'
+
+    '|'  décalage et aller à l'état 12
+    ')'  décalage et aller à l'état 16
+
+
+État 11
+
+    0 $accept: ligne $end .
+
+    $défaut  accepter
+
+
+État 12
+
+    3 S: S '|' . E
+
+    SYMBOLE  décalage et aller à l'état 2
+    '('      décalage et aller à l'état 3
+
+    E  aller à l'état 17
+    T  aller à l'état 7
+    F  aller à l'état 8
+
+
+État 13
+
+    2 ligne: S '\n' .
+
+    $défaut  réduction par utilisation de la règle 2 (ligne)
+
+
+État 14
+
+    5 E: E T .
+    7 T: T . '*'
+
+    '*'  décalage et aller à l'état 15
+
+    $défaut  réduction par utilisation de la règle 5 (E)
+
+
+État 15
+
+    7 T: T '*' .
+
+    $défaut  réduction par utilisation de la règle 7 (T)
+
+
+État 16
+
+    9 F: '(' S ')' .
+
+    $défaut  réduction par utilisation de la règle 9 (F)
+
+
+État 17
+
+    3 S: S '|' E .
+    5 E: E . T
+
+    SYMBOLE  décalage et aller à l'état 2
+    '('      décalage et aller à l'état 3
+
+    $défaut  réduction par utilisation de la règle 3 (S)
+
+    T  aller à l'état 14
+    F  aller à l'état 8
