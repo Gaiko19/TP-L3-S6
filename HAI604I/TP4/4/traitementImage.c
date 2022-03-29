@@ -41,7 +41,7 @@ void * traitement (void * p) {
     pthread_mutex_lock(&vPartage->lock);
     
     if(args->idThread != 0){ // le premier traitement n'attent personne
-      while(vPartage->di[i] != args->idThread){
+      while(vPartage->di[i] != args->idThread -1){
         printf("Traitement %i attends la zone %i\n", args->idThread,i);
         pthread_cond_wait(&vPartage->cond, &vPartage->lock);
       }
@@ -79,8 +79,17 @@ int main(int argc, char * argv[]){
   vPartage.nbZones =  atoi(argv[2]);
   vPartage.di = malloc(atoi(argv[2])*sizeof(int));
 
-  pthread_mutex_init(&(vPartage.lock), NULL);
-  pthread_cond_init(&(vPartage.cond), NULL);
+  
+  int err;
+  if ((err = pthread_mutex_init(&vPartage.lock, NULL)) != 0) {
+      printf("Erreur : %s\n", strerror(err));
+      exit(EXIT_FAILURE);
+  }
+
+  if ((err = pthread_cond_init(&(vPartage.cond), NULL)) != 0) {
+      printf("Erreur : %s\n", strerror(err));
+      exit(EXIT_FAILURE);
+  }
   
   srand(atoi(argv[1]));  // initialisation de rand pour la simulation de longs calculs
  
