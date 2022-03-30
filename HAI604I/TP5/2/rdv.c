@@ -62,7 +62,7 @@ int main(int argc, char * argv[]){
     }
     printf("%d ] \n", valinit.array[nbSem-1]);
     
-    // Travail 1
+    // Travail 1 // Mettre la suite dans un prog Pi et rename en Pctrl
     calcul();
     printf("Calcul terminé\n");
     struct sembuf op[] = {

@@ -1,6 +1,5 @@
 Require Import Arith.
-Require Import Lia. (* Omega marche pas dans les dernières versions de Coq, il faut Lia *)
-(* Require Import Omega. *)
+Require Import Lia.
 Require Export List.
 Open Scope list_scope.
 Import ListNotations.
@@ -86,7 +85,7 @@ Lemma head_is_perm : forall (x1 x2 : nat) (l : list nat), is_perm (x1 :: x2 :: l
 Proof.
   intros.
   apply (is_perm_S (x2::l) [x2] l x1).
- apply (is_perm_S l [] l x2).
+  apply (is_perm_S l [] l x2).
   simpl.
   apply is_perm_refl.
 Qed.
@@ -96,18 +95,20 @@ Lemma insert_is_perm : forall (x : nat) (l : list nat), is_perm (x::l) (insert x
 Proof.
   intros.
   induction l.
-  simpl.
-  apply is_perm_refl.
-  simpl.
-  elim (le_dec a x).
-  intro.
-  apply is_perm_sym.
-  apply (is_perm_S (insert x l) [x] l a).
-  simpl.
-  apply is_perm_sym.
-  apply IHl.
-  intro.
-  apply is_perm_refl.
+    simpl.
+    apply is_perm_refl.
+
+    simpl.
+    elim (le_dec a x).
+      intro.
+      apply is_perm_sym.
+      apply (is_perm_S (insert x l) [x] l a).
+      simpl.
+      apply is_perm_sym.
+      apply IHl.
+
+      intro.
+      apply is_perm_refl.
 Qed.
 
 (* 3. Lemme de tri *)
@@ -180,13 +181,12 @@ Proof.
       apply is_perm_trans with (a::isort L1).
       split.
       apply is_perm_cons.
+      assumption.
 
-  
+      apply insert_is_perm.
+
+      apply insert_is_sorted.
+      assumption.
+Qed.
 
 
-
-
-
-
-
- 
