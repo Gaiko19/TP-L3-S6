@@ -5,17 +5,17 @@
 #include <sys/sem.h>
 #include <stdlib.h>
 /*
- exemple de crétaion d'un tableau de sémaphores, dont le nombre
- d'éléments et la valeur initiale est passée en paramètre du
- programme (dans cet exemple, les élements sont initialisés à la même valeur)
+ exemple de crï¿½taion d'un tableau de sï¿½maphores, dont le nombre
+ d'ï¿½lï¿½ments et la valeur initiale est passï¿½e en paramï¿½tre du
+ programme (dans cet exemple, les ï¿½lements sont initialisï¿½s ï¿½ la mï¿½me valeur)
 
- */
+*/
 
 int main(int argc, char * argv[]){
   
   if (argc!=5) {
     printf("Nbre d'args invalide, utilisation :\n");
-    printf("%s nombre-semaphores valeur-initiale fichier-pour-cle-ipc entier-pour-clé-ipc\n", argv[0]);
+    printf("%s nombre-semaphores valeur-initiale fichier-pour-cle-ipc entier-pour-clï¿½-ipc\n", argv[0]);
     exit(0);
   }
 	  
@@ -34,7 +34,7 @@ int main(int argc, char * argv[]){
 
 
   
-  // initialisation des sémaphores a la valeur passée en parametre (faire autrement pour des valeurs différentes ):
+  // initialisation des sï¿½maphores a la valeur passï¿½e en parametre (faire autrement pour des valeurs diffï¿½rentes ):
  
   ushort tabinit[nbSem];
   for (int i = 0; i < nbSem; i++) tabinit[i] = atoi(argv[2]);;
@@ -53,8 +53,8 @@ int main(int argc, char * argv[]){
     exit(1);
   }
 
-  /* test affichage valeurs des sémaphores du tableau */
-  valinit.array = (ushort*)malloc(nbSem * sizeof(ushort)); // pour montrer qu'on récupère bien un nouveau tableau dans la suite
+  /* test affichage valeurs des sï¿½maphores du tableau */
+  valinit.array = (ushort*)malloc(nbSem * sizeof(ushort)); // pour montrer qu'on rï¿½cupï¿½re bien un nouveau tableau dans la suite
 
   if (semctl(idSem, nbSem, GETALL, valinit) == -1){
     perror("erreur initialisation sem : ");

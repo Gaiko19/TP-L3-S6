@@ -1,6 +1,6 @@
 /*
   Description : 
-  Le programme dertruit un tableau de sémaphores s'il existe.
+  Le programme dertruit un tableau de sï¿½maphores s'il existe.
   
 */
 
@@ -24,7 +24,7 @@ int main(int argc, char * argv[]){
 
   int idSem = semget(cleSem, 1, 0600);
 
-  // j'utilise semget de sorte a s'assurer que le tableau a détruire existe.
+  // j'utilise semget de sorte a s'assurer que le tableau a dÃ©truire existe.
   if (idSem==-1){
     perror("erreur  semget");
     exit(-1);

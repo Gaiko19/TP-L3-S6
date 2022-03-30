@@ -35,6 +35,8 @@ int main(int argc, char * argv[]){
     }
     cout << "msgget ok" << endl;
 
+
+    
     sMsg vMsg;
     int ret = msgrcv(msgid, &vMsg, (size_t)sizeof(vMsg.mot), (long) vMsg.etiq, 0);
     if (ret == -1) {
@@ -44,7 +46,10 @@ int main(int argc, char * argv[]){
         cout << "Message : " << vMsg.mot<< endl;
     }
 
-
+    if (msgctl(msgid, IPC_RMID, NULL) == -1) {
+        perror("erreur suppression file de message :");
+    }
+    cout << "suppression file ok" << endl;
 
 
     return 0;
