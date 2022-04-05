@@ -67,7 +67,10 @@ int main(int argc, char * argv[]){
     }
     printf("%d ] \n", valinit.array[nbSem-1]);
     
-    while (valinit.array[nbSem-1] > 0) ;
+    struct sembuf op[] = {{0,0,0}};  
+    if (semop(idSem, op, 1) == -1) {
+        perror("Erreur op : ");
+    }
 
     // destruction :
     printf("Destruction sem\n");

@@ -14,7 +14,6 @@ void calcul() {
     sleep(wait);
 }
 
-struct sembuf;
 
 union semun{
     int val;
@@ -50,7 +49,7 @@ int main(int argc, char * argv[]){
 
     printf("\033[%im[%i] Calcul terminé, mise à jour du point de rendez-vous.\n\033[0m", 1 + 31, 1);
     // On retire 1 du tableau de sémaphores car ce processus est arrivé au RDV
-    sembuf op[] = {
+    struct sembuf op[] = {
         {(ushort)0, (short)-1,0},
         {(ushort)0, (short)0,0},
     };
@@ -58,7 +57,7 @@ int main(int argc, char * argv[]){
         exit(EXIT_FAILURE);
 
     // Récupération de semaphores[i] pour affichage
-    int semValue = semctl(semid, 1, GETVAL, (semun){ .val = 0 });
+    int semValue = semctl(semid, 0, GETVAL, (semun){ .val = 0 });
     if (semValue == -1) 
         exit(EXIT_FAILURE);
     printf("\033[%im[%i] Valeur actuelle de la sémaphore : %i\n\033[0m", 1 + 31, 1, semValue);
