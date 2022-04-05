@@ -2,11 +2,12 @@
 #~ définitions
 ########################################
 
-BIN=bin/rdv  bin/suppr
+BIN=bin/Pi  bin/Pctrl bin/suppr
 
 # liste des fichiers sources
-SRCS0=rdv.c
-SRCS1=supprimeSem.c
+SRCS0=Pi.cc
+SRCS1=Pctrl.cc
+SRCS3=supprimeSem.cc
 
 default: $(BIN)
 
@@ -14,13 +15,16 @@ default: $(BIN)
 #~ regles pour l'executable
 ########################################
 
-obj/%.o: %.c
+obj/%.o: %.cc
 	g++ -Wall -Iinclude -c $< -o $@
 
-bin/rdv: $(SRCS0:%.c=obj/%.o)
+bin/Pi: $(SRCS2:%.c=obj/%.o) $(SRCS0:%.c=obj/%.o)
 	g++ -o $@ $+
 
-bin/suppr: $(SRCS1:%.c=obj/%.o)
+bin/Pctrl: $(SRCS1:%.c=obj/%.o)
+	g++ -o $@ $+
+
+bin/suppr: $(SRCS3:%.c=obj/%.o)
 	g++ -o $@ $+
 
 

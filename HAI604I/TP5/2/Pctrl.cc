@@ -1,4 +1,5 @@
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/ipc.h>
@@ -17,12 +18,16 @@ int main(int argc, char * argv[]){
         printf("%s nombre-semaphores valeur-initiale fichier-pour-cle-ipc entier-pour-clé-ipc\n", argv[0]);
         exit(0);
     }
+
     int clesem = ftok(argv[3], atoi(argv[4]));
+    if (clesem==-1) {
+        perror("Erreur ftok : ");
+        exit(2);
+    }
         
     int nbSem = atoi(argv[1]);
 
     int idSem=semget(clesem, nbSem, IPC_CREAT | IPC_EXCL | 0600);
-
     if(idSem == -1){
         perror("erreur semget : ");
         exit(-1);
@@ -62,43 +67,7 @@ int main(int argc, char * argv[]){
     }
     printf("%d ] \n", valinit.array[nbSem-1]);
     
-    // Travail 1 // Mettre la suite dans un prog Pi et rename en Pctrl
-    calcul();
-    printf("Calcul terminé\n");
-    struct sembuf op[] = {
-        {(ushort)0, (short)-1,0},
-        {(ushort)0, (short)0,0},
-    };
-
-    if(semop(idSem,op,1) == -1) { //pour P
-        perror("Erreur blocage appelant : ");
-        exit(1);
-    } 
-    if (semctl(idSem, nbSem, GETALL, valinit) == -1){
-        perror("erreur récup sem : ");
-        exit(1);
-    } 
-   printf("Valeurs des sempahores apres P [ "); 
-    for(int i=0; i < nbSem-1; i++){
-        printf("%d, ", valinit.array[i]);
-    }
-    printf("%d ] \n", valinit.array[nbSem-1]);
-
-    if(semop(idSem, op+1,1) == -1) { //Pour Z 
-        perror("Erreur déblocage : ");
-        exit(1);
-    }
-
-    if (semctl(idSem, nbSem, GETALL, valinit) == -1){
-        perror("erreur récup sem : ");
-        exit(1);
-    } 
-   printf("Valeurs des sempahores apres Z [ "); 
-    for(int i=0; i < nbSem-1; i++){
-        printf("%d, ", valinit.array[i]);
-    }
-    printf("%d ] \n", valinit.array[nbSem-1]);
- 
+    while (valinit.array[nbSem-1] > 0) ;
 
     // destruction :
     printf("Destruction sem\n");
