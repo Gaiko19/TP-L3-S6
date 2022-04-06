@@ -45,6 +45,18 @@ int main(int argc, char * argv[]){
     }
     cout << "msgget ok" << endl;
 
+    valinit.array = (ushort*)malloc(nbSem * sizeof(ushort));
+    if (semctl(semid, nbSem, GETALL, valinit) == -1){
+        perror("erreur récup sem : ");
+        exit(1);
+    } 
+
+    printf("Valeurs des sempahores avant travail [ "); 
+    for(int i=0; i < nbSem-1; i++){
+        printf("%d, ", valinit.array[i]);
+    }
+    printf("%d ] \n", valinit.array[nbSem-1]);
+
     for (int i =0; i < nbSem; i++) {
         struct sembuf op[] = {
             {(ushort)i, (short)(numProc-1),0},
@@ -53,7 +65,7 @@ int main(int argc, char * argv[]){
         // Vérif de l'accés à la ressource
         if (semop(semid,op, 1) == -1) {
             perror("Vous n'avez pas accés\n");
-            exit(EXIT_FAILURE);
+            exit(-1);
         }
         printf("Calcul n°%i sur la zone %i.\n", numProc, i);
         calcul();
@@ -61,19 +73,24 @@ int main(int argc, char * argv[]){
         printf("Calcul n°%i terminé sur la zone %i.\n", numProc, i);
         // On ajoute 1 au tableau de sémaphores car ce processus a terminé son traitement
         if (semop(semid, op+1, 1) == -1) {
-            exit(EXIT_FAILURE);
+            exit(-1);
         }
 
-        // Récupération de semaphores[i] pour affichage
-        int semValue = semctl(semid, 0, GETVAL, (semun){ .val = 0 });
-        if (semValue == -1) 
-            exit(EXIT_FAILURE);
-        printf("Valeur actuelle de la sémaphore : %i\n", semValue);
-
-        // Tant que semaphores[i] n'est pas à 0, on attend.
-        if (semop(semid, op + 1, 1) == -1)
-            exit(EXIT_FAILURE);
     }
+    
+
+    if (semctl(semid, nbSem, GETALL, valinit) == -1){
+        perror("erreur récup sem : ");
+        exit(1);
+    } 
+
+    printf("Valeurs des sempahores apres travail [ "); 
+    for(int i=0; i < nbSem-1; i++){
+        printf("%d, ", valinit.array[i]);
+    }
+    printf("%d ] \n", valinit.array[nbSem-1]);
+
+    free(valinit.array);
 
     return 0;
 }

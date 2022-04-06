@@ -61,7 +61,7 @@ int main(int argc, char * argv[]){
     valinit.array = (ushort*)malloc(nbSem * sizeof(ushort));
 
     if (semctl(idSem, nbSem, GETALL, valinit) == -1){
-        perror("erreur initialisation sem : ");
+        perror("erreur récup sem : ");
         exit(1);
     } 
 
