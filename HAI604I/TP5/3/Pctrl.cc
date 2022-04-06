@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -11,15 +12,13 @@ traitement synchronisé. Le nombre d'éléments correspond au nombre de
 traitements -1 et les valeurs initiales sont à 0 (à la case i, la
 valeur corerspond à la dernière zone traitée par le processus
 P_(i+1))
-
-création d'un segment de memoire partagé qui sera un tableau d'entier (un élélement correspondraàune zone)
 */
 
 int main(int argc, char * argv[]){
 
     if (argc!=5) {
         printf("Nbre d'args invalide, utilisation :\n");
-        printf("%s nombre-traitements nombre-zones fichier-pour-cle-ipc entier-pour-clé-ipc\n", argv[0]);
+        printf("%s nombre-zones valeure-init fichier-pour-cle-ipc entier-pour-clé-ipc\n", argv[0]);
         exit(0);
     }
 
@@ -29,7 +28,7 @@ int main(int argc, char * argv[]){
         exit(-1);
     }    
 
-    int nbSem = atoi(argv[2]);
+    int nbSem = atoi(argv[1]);
 
     // Création des sémaphores
     int idSem=semget(cle, nbSem, IPC_CREAT | IPC_EXCL | 0600);
@@ -42,7 +41,7 @@ int main(int argc, char * argv[]){
 
     // initialisation des sémaphores
     ushort tabinit[nbSem];
-    for (int i = 0; i < nbSem; i++) tabinit[i] = 0;
+    for (int i = 0; i < nbSem; i++) tabinit[i] = atoi(argv[2]);
 
 
     union semun{
@@ -73,41 +72,6 @@ int main(int argc, char * argv[]){
     printf("%d ] \n", valinit.array[nbSem-1]);
 
     free(valinit.array);
-
-
-
-    // création et initialisation du segment de mémoire partagé :
-
-    // on réutilise la méme clé puisque la numérotation des IPC dépend du type d'objet.
-    int laMem = shmget(cle, atoi(argv[1])*sizeof(int), IPC_CREAT | IPC_EXCL | 0600);
-    if (laMem == -1){
-        perror("erreur shmget : ");
-        exit(-1);
-    }
-
-    printf("creation segment de mémoire ok. mem id : %d \n", laMem);
-
-
-    //attachement au segment pour pouvoir y accéder
-    int * p_att = (int *)shmat(laMem, NULL, 0);
-    if (p_att== (int *)-1){
-        perror("erreur shmat : ");
-        exit(-1);
-    }
-
-    // j'ai un pointeur sur le segment, j'initialise le tableau 
-
-    for(int i=0; i < atoi(argv[2]); i++){
-        p_att[i] = 0;
-    }
-
-
-    // détachement pour signaler au systéme la fin de l'utilisation du segment
-
-    if (shmdt(p_att) == -1){
-        perror("erreur shmdt : ");
-        exit(-1);
-    }
 
     return 0;
 }
