@@ -59,7 +59,7 @@ int main(int argc, char * argv[]){
 
     for (int i =0; i < nbSem; i++) {
         struct sembuf op[] = {
-            {(ushort)i, (short)(numProc-1),0},
+            {(ushort)i, (short)(-(numProc-1)),0},
             {(ushort)i, (short)(numProc),0},
         };
         // Vérif de l'accés à la ressource

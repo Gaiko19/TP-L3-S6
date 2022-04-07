@@ -34,7 +34,7 @@ void * participant (void * p){
 
   int wait = 1;
 
-  printf("[Thread %i] : début calcul, duration : %is\n", args->idThread, wait*3);
+  printf("[Thread %i] : début calcul, durée : %is\n", args->idThread, wait*3);
   calcul(wait);
   printf("[Thread %i] : fin calcul\n", args->idThread);
 
@@ -56,7 +56,7 @@ void * participant (void * p){
   printf("[Thread %i] : je libère le verrou\n", args->idThread);
   
   // reprise et poursuite de l'execution.
-  printf("[Thread %i] : début calcul final, duration : %is\n", args->idThread, wait*3);
+  printf("[Thread %i] : début calcul final, durée : %is\n", args->idThread, wait*3);
   calcul(wait);
   printf("[Thread %i] : fin calcul final\n", args->idThread);
 
@@ -97,11 +97,11 @@ int main(int argc, char * argv[]){
 
   }
   for (int i = 0; i < atoi(argv[1]); i++){
-      tabParams->idThread = i;
-      if (pthread_create(&threads[i], NULL, participant, tabParams) != 0){
-        perror("erreur creation thread");
-        exit(1);
-      }
+    tabParams[i].idThread = i;
+    if (pthread_create(&threads[i], NULL, participant, &tabParams[i]) != 0){
+      perror("erreur creation thread");
+      exit(1);
+    }
   }
 
   // Attente de la fin des threads. Partie obligatoire 

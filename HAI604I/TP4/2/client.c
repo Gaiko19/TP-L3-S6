@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
     printf("[Client] : connexion réussie\n");
     int tailleMsg = 100000;
     char msg[100000];
+    printf("Entrez un message : ");
     fgets(msg, 100000, stdin);
 
     int resTaille = sendTCP(ds, &tailleMsg, sizeof(int));

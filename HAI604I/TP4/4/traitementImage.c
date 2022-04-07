@@ -51,7 +51,7 @@ void * traitement (void * p) {
 
     // dans cette partie, le traitement de la zone i est à faire en faisant une simulation d'un long calcul (appel a calcul(...)
     printf("Traitement n°%i de la zone %i \n",args->idThread, i);
-    calcul(2 + args->idThread);
+    calcul(1 + args->idThread);
     printf("Fin du traitement n°%i de la zone %i \n",args->idThread, i);
     pthread_mutex_lock(&vPartage->lock);
     vPartage->di[i] = args->idThread;

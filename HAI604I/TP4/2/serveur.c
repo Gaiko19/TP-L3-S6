@@ -86,7 +86,7 @@ int i=0;
 while (1) {
     struct sockaddr_in sock_cltTCP;
     int newConnectionTCP = accept(srv, (struct sockaddr*)&sock_cltTCP, &size);
-    
+
     if (newConnectionTCP == -1) {
         perror("[Serveur] : problème lors de la connection d'un client");
     }
@@ -100,7 +100,7 @@ while (1) {
       perror("erreur creation thread");
       exit(1);
     }
-    
+
   }
     close(srv);
     printf("[SERVEUR] Sortie.\n");

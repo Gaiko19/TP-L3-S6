@@ -63,8 +63,9 @@ int main(int argc, char * argv[]){
             perror("Erreur lors de la réception de la variable partagée ");
             exit(EXIT_FAILURE);
         }
-
+        printf("Var partagée : %s\n",data.data);
         strcpy(data.data, message);
+
         data.monetiquette = 2;
         res = msgsnd(msgid, (const void *)&data, strlen(data.data), 0);
         if (res == -1) {
