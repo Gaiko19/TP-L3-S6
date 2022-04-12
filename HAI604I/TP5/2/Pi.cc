@@ -66,6 +66,6 @@ int main(int argc, char * argv[]){
     if (semop(semid, op + 1, 1) == -1)
         exit(EXIT_FAILURE);
 
-
+    printf("Fin");
     return 0;
 }

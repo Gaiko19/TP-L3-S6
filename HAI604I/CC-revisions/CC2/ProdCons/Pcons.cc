@@ -33,26 +33,23 @@ int main(int argc, char * argv[]){
     cout << "msgget ok" << endl;
 
     
-    int msg=0;
     while(1){
-        
-        msg = msg+1;
+        int message;
         const access_request request = (access_request){.mtype = 1, .nproc = nproc};
         ssize_t res = msgsnd(msgid, (const void *)&request, sizeof(request.nproc), 0);
         if (res == -1) {
             perror("Erreur lors de la demande d'accès de la variable partagée ");
             exit(EXIT_FAILURE);
         }
+        printf("Accès reçu\n ");
+        // Réception de la variable partagée
         sMsg data;
-        data.data = msg;
-        data.etiq = nproc;
-        res = msgsnd(msgid, (const void *)&data, sizeof(int), 0);
+        res = msgrcv(msgid, (void *)&data.data, sizeof(data.data), 1, 0);
         if (res == -1) {
-            perror("Erreur lors de la modification de la variable partagée ");
+            perror("Erreur lors de la réception de la variable partagée ");
             exit(EXIT_FAILURE);
         }
-        printf("Data produite...\n ");
-        sleep(3);
+        printf("Var partagée : %d\n",data.data);
 
     } 
     return 0;
