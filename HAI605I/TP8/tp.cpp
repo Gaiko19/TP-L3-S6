@@ -423,10 +423,10 @@ void key (unsigned char keyPressed, int x, int y) {
         specularRef -=0.1;
         break;
     case '+':
-        shininess +=0.1;
+        shininess +=1;
         break;
     case '-':
-        shininess -=0.1;
+        shininess -=1;
         break;
     case '?':
     default:
