@@ -405,10 +405,10 @@ void key (unsigned char keyPressed, int x, int y) {
         }
         break;
     case 'a':
-        ambientRef +=0.1;
+        ambientRef = max(0.f, ambientRef - 0.1f);
         break;
     case 'A':
-        ambientRef -=0.1;
+        ambientRef = min(1.f, ambientRef + 0.1f);
         break;
     case 'd':
         diffuseRef +=0.1;
